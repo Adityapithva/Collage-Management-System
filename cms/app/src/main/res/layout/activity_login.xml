@@ -4,84 +4,67 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:gravity="center">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register"
+        android:text="Login"
         android:textSize="24sp"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginBottom="24dp"/>
 
     <EditText
-        android:id="@+id/nameEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Name"
-        android:padding="12dp"/>
-
-    <EditText
-        android:id="@+id/emailEditText"
+        android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:padding="12dp"
-        android:layout_marginTop="8dp"/>
+        android:padding="12dp"/>
 
     <EditText
-        android:id="@+id/passwordEditText"
+        android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
         android:padding="12dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="16dp"/>
 
     <EditText
-        android:id="@+id/registrationCodeEditText"
+        android:id="@+id/editTextLoginCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Registration Code"
+        android:hint="Login Code"
+        android:inputType="text"
         android:padding="12dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="16dp"/>
 
     <Button
-        android:id="@+id/uploadImageButton"
+        android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upload Profile Image"
-        android:layout_marginTop="16dp"
+        android:text="Login"
+        android:layout_marginTop="24dp"
         android:textColor="@android:color/white"/>
 
-    <ImageView
-        android:id="@+id/profileImageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:src="@drawable/defaultphoto"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="8dp"/>
-
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        android:layout_marginTop="16dp"
-        android:textColor="@android:color/white"/>
-
-    <TextView
-        android:id="@+id/loginTextView"
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Already have an account? Login"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/textViewRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Don't have an account? Register"
         android:layout_marginTop="16dp"
         android:layout_gravity="center"
         android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"/>
+        android:focusable="true"/>
 
 </LinearLayout>

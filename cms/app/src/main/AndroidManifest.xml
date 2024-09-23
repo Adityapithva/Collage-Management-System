@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Add this permission to access external storage -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
@@ -14,26 +14,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cms"
         tools:targetApi="31">
-
+        <activity
+            android:name=".FacultyDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".StudentDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true" />
         <activity
             android:name=".RegisterActivity"
-            android:exported="false" />
-
-        <!-- SplashScreen Activity -->
+            android:exported="true" /> <!-- SplashScreen Activity -->
         <activity
             android:name=".SplashScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- MainActivity -->
+        </activity> <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
-
+            android:exported="true" />
     </application>
 
 </manifest>

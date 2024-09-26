@@ -3,7 +3,6 @@ package com.example.cms;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,12 +15,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 import java.util.Map;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -107,16 +109,15 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // Register the user
+        // Register the user with Firebase
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            uploadUserDataToFirestore(user, name, email, registrationCode, imageUri);
+                            // Generate a sequential enrollment number from Firestore
+                            generateEnrollmentNumberAndRegister(user, name, email, registrationCode, imageUri);
                         }
-                        Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_SHORT).show();
-                        startActivity(i);
                     } else {
                         Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -127,26 +128,64 @@ public class RegisterActivity extends AppCompatActivity {
         return code.equals("STUDENT123") || code.equals("FACULTY456");
     }
 
-    private void uploadUserDataToFirestore(FirebaseUser user, String name, String email, String registrationCode, Uri imageUri) {
+    private void generateEnrollmentNumberAndRegister(FirebaseUser user, String name, String email, String registrationCode, Uri imageUri) {
+        String courseCode = "CS"; // Assuming course code is "CS" for Computer Science
+        String userId = user.getUid();
+
+        DocumentReference enrollmentRef = db.collection("counters").document("enrollmentCounter");
+        enrollmentRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Long currentCounter = documentSnapshot.getLong("counter");
+                if (currentCounter != null) {
+                    long newCounter = currentCounter + 1;
+                    String enrollmentNumber = generateEnrollmentNumber(courseCode, newCounter);
+
+                    // Update the counter in Firestore
+                    enrollmentRef.update("counter", newCounter)
+                            .addOnSuccessListener(aVoid -> {
+                                // Now upload user data with the generated enrollment number
+                                uploadUserDataToFirestore(user, name, email, registrationCode, imageUri, enrollmentNumber);
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Failed to update enrollment counter", Toast.LENGTH_SHORT).show());
+                }
+            } else {
+                // If counter does not exist, create it
+                Map<String, Object> counterData = new HashMap<>();
+                counterData.put("counter", 1L);
+                enrollmentRef.set(counterData).addOnSuccessListener(aVoid -> {
+                    String enrollmentNumber = generateEnrollmentNumber(courseCode, 1L);
+                    uploadUserDataToFirestore(user, name, email, registrationCode, imageUri, enrollmentNumber);
+                });
+            }
+        });
+    }
+
+    private String generateEnrollmentNumber(String courseCode, long serialNumber) {
+        int year = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+        return year + courseCode + String.format("%03d", serialNumber); // Format serial number to 3 digits
+    }
+
+    private void uploadUserDataToFirestore(FirebaseUser user, String name, String email, String registrationCode, Uri imageUri, String enrollmentNumber) {
         String userId = user.getUid();
 
         if (imageUri != null) {
             StorageReference imageRef = storageReference.child(userId + ".jpg");
             imageRef.putFile(imageUri)
                     .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
-                            .addOnSuccessListener(uri -> storeUserData(userId, name, email, registrationCode, uri.toString()))
+                            .addOnSuccessListener(uri -> storeUserData(userId, name, email, registrationCode, uri.toString(), enrollmentNumber))
                             .addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show())
                     );
         } else {
-            storeUserData(userId, name, email, registrationCode, null);
+            storeUserData(userId, name, email, registrationCode, null, enrollmentNumber);
         }
     }
 
-    private void storeUserData(String userId, String name, String email, String registrationCode, @Nullable String imageUrl) {
+    private void storeUserData(String userId, String name, String email, String registrationCode, @Nullable String imageUrl, String enrollmentNumber) {
         Map<String, Object> userData = new HashMap<>();
         userData.put("name", name);
         userData.put("email", email);
         userData.put("registrationCode", registrationCode);
+        userData.put("enrollmentNumber", enrollmentNumber); // Store the enrollment number
         if (imageUrl != null) {
             userData.put("profileImageUrl", imageUrl);
         }

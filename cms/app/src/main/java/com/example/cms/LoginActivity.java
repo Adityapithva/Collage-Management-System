@@ -75,12 +75,12 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         if (loginCode.equals(STUDENT_CODE)) {
                             Toast.makeText(LoginActivity.this, "Login as student successful", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, StudentDashboardActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, StudentProfile.class);
                             startActivity(intent);
                             finish();
                         } else if (loginCode.equals(FACULTY_CODE)) {
                             Toast.makeText(LoginActivity.this, "Login as faculty successful", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(LoginActivity.this, FacultyDashboardActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, FacultyProfileActivity.class);
                             startActivity(intent);
                             finish();
                         } else {

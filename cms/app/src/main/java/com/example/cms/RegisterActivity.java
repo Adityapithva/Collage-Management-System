@@ -117,6 +117,9 @@ public class RegisterActivity extends AppCompatActivity {
                         if (user != null) {
                             // Generate a sequential enrollment number from Firestore
                             generateEnrollmentNumberAndRegister(user, name, email, registrationCode, imageUri);
+                            Toast.makeText(RegisterActivity.this, "Registration success", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(this, LoginActivity.class);
+                            startActivity(i);
                         }
                     } else {
                         Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -185,7 +188,7 @@ public class RegisterActivity extends AppCompatActivity {
         userData.put("name", name);
         userData.put("email", email);
         userData.put("registrationCode", registrationCode);
-        userData.put("enrollmentNumber", enrollmentNumber); // Store the enrollment number
+        userData.put("enrollmentNumber", enrollmentNumber);
         if (imageUrl != null) {
             userData.put("profileImageUrl", imageUrl);
         }
